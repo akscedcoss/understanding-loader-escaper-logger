@@ -2,7 +2,8 @@
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Http\Response;
-
+use Phalcon\Logger;
+use Phalcon\Logger\Adapter\Stream;
 class LoginController extends Controller
 {
     public function indexAction()
@@ -49,6 +50,15 @@ class LoginController extends Controller
             $response->setStatusCode(403, 'Not Found');
             $response->setContent("Sorry, Authecation Failed");
             $response->send();
+            $adapter = new Stream('../app/logs/signin.log');
+            $logger  = new Logger(
+                'messages',
+                [
+                    'main' => $adapter,
+                ]
+            );
+
+            $logger->error("Sorry, Login Failed");
             die();
         }
         // if user email and password is correct we need to create session
@@ -63,7 +73,15 @@ class LoginController extends Controller
              );  
             
         }
- 
+        $adapter = new Stream('../app/logs/signin.log');
+        $logger  = new Logger(
+            'messages',
+            [
+                'main' => $adapter,
+            ]
+        );
+
+        $logger->info("Logged in");
         // redirect to the dashboard 
         return $this->response->redirect('/');
 

@@ -2,6 +2,8 @@
 
 use Phalcon\Mvc\Controller;
 use \App\Components\myescaper;
+use Phalcon\Logger;
+use Phalcon\Logger\Adapter\Stream;
 class SignupController extends Controller
 {
 
@@ -41,8 +43,26 @@ class SignupController extends Controller
         $this->view->success = $success;
 
         if ($success) {
+            $adapter = new Stream('../app/logs/signup.log');
+            $logger  = new Logger(
+                'messages',
+                [
+                    'main' => $adapter,
+                ]
+            );
+
+            $logger->info( $data['email']."  Register succesfully");
             $this->view->message = "Register succesfully";
         } else {
+            $adapter = new Stream('../app/logs/signup.log');
+            $logger  = new Logger(
+                'messages',
+                [
+                    'main' => $adapter,
+                ]
+            );
+
+            $logger->error(implode(" ", $user->getMessages()));
             $this->view->message = "Not Register succesfully due to following reason: <br>" . implode("<br>", $user->getMessages());
         }
     }
